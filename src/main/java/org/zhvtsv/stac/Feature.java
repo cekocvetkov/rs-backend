@@ -8,9 +8,10 @@ public class Feature {
     private String id;
     private double[] boundingBox;
     private Geometry geometry;
-    
+
     private String downloadUrl;
-    
+    private String thumbnail;
+
     public Feature(String id, double[] boundingBox, Geometry geometry) {
         this.id = id;
         this.geometry = geometry;
@@ -50,7 +51,15 @@ public class Feature {
     {
         this.downloadUrl = downloadUrl;
     }
-    
+
+    public String getThumbnail() {
+        return thumbnail;
+    }
+
+    public void setThumbnail(String thumbnail) {
+        this.thumbnail = thumbnail;
+    }
+
     @JsonProperty("bbox")
     public double[] getBoundingBox() {
         return boundingBox;
@@ -59,14 +68,15 @@ public class Feature {
     public void setBoundingBox(double[] boundingBox) {
         this.boundingBox = boundingBox;
     }
-    
+
     @Override
     public String toString() {
         return "Feature{" +
                 "id='" + id + '\'' +
-                ", downloadUrl=" + downloadUrl + '\'' +
                 ", boundingBox=" + Arrays.toString(boundingBox) +
                 ", geometry=" + geometry +
+                ", downloadUrl='" + downloadUrl + '\'' +
+                ", thumbnail='" + thumbnail + '\'' +
                 '}';
     }
 }

@@ -3,7 +3,7 @@ package org.zhvtsv.models;
 import java.util.Arrays;
 
 public class ExtentRequest {
-    double [] extent;
+    private double [] extent;
 
     public double[] getExtent() {
         return extent;

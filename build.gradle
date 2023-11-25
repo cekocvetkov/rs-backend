@@ -15,6 +15,8 @@ dependencies {
     implementation 'io.quarkus:quarkus-resteasy'
 
     implementation 'org.json:json:20171018'
+    implementation 'commons-io:commons-io:2.6'
+
 
     testImplementation 'io.quarkus:quarkus-junit5'
     testImplementation 'io.rest-assured:rest-assured'

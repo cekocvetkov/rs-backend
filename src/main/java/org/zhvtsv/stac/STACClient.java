@@ -64,6 +64,27 @@ public class STACClient {
         return stackItemsResponse;
     }
 
+    public JSONObject getFeatureJSON(String boundingBox, String dateTimeRange) {
+        HttpClient httpClient = HttpClient.newBuilder().build();
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(url + "bbox=" + boundingBox + "&datetime=" + dateTimeRange))
+                .GET()
+                .build();
+
+        HttpResponse<String> response = null;
+        try {
+            response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+//            System.out.println(response.body());
+        } catch (IOException | InterruptedException e) {
+            throw new ServerErrorException("Request for GeoTIFF Data failed", Response.Status.BAD_GATEWAY);
+        }
+        JSONObject json = new JSONObject(response.body());
+        JSONArray featuresJsonArray = json.getJSONArray("features");
+        JSONObject featureR = featuresJsonArray.getJSONObject(5);
+        return featureR;
+    }
+
     public InputStream getDataFromAssetUrl(String url){
         HttpClient httpClient = HttpClient.newBuilder().build();
 

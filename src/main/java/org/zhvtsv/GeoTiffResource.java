@@ -12,6 +12,7 @@ import org.json.JSONObject;
 import org.zhvtsv.models.ExtentRequest;
 import org.zhvtsv.models.StacItemsResponse;
 import org.zhvtsv.sentinel.processapi.SentinelProcessApiClient;
+import org.zhvtsv.sentinel.processapi.SentinelRequest;
 import org.zhvtsv.stac.STACClient;
 
 import java.io.IOException;
@@ -33,7 +34,7 @@ public class GeoTiffResource {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     public Response getGeoTiff(ExtentRequest extentRequest) throws URISyntaxException, IOException {
-        String boundingBox = getBoundingBoxString(extentRequest);
+        String boundingBox = getBoundingBoxString(extentRequest.getExtent());
         LOG.info("Request for GeoTiffs with extent " + boundingBox);
 
         StacItemsResponse stacItemsResponse = stacClient.getItems(boundingBox, "2021-06-01T09:59:31.293Z/2023-06-01T09:59:31.293Z&eo:cloud_cover=90");
@@ -49,7 +50,7 @@ public class GeoTiffResource {
     @Path("/blob")
     @Consumes(MediaType.APPLICATION_JSON)
     public Response getGeoTiffRedirect(ExtentRequest extentRequest) throws URISyntaxException, IOException {
-        String boundingBox = getBoundingBoxString(extentRequest);
+        String boundingBox = getBoundingBoxString(extentRequest.getExtent());
         LOG.info("Request for GeoTiffs with extent " + boundingBox);
 
         StacItemsResponse stacItemsResponse = stacClient.getItems(boundingBox, "2021-06-01T09:59:31.293Z/2023-06-01T09:59:31.293Z&eo:cloud_cover=90");
@@ -63,7 +64,7 @@ public class GeoTiffResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response getGeoTiffJson(ExtentRequest extentRequest) {
-        String boundingBox = getBoundingBoxString(extentRequest);
+        String boundingBox = getBoundingBoxString(extentRequest.getExtent());
         LOG.info("Request for GeoTiffs with extent " + boundingBox);
 
         JSONObject j = stacClient.getFeatureJSON(boundingBox, "2021-06-01T09:59:31.293Z/2023-06-01T09:59:31.293Z&eo:cloud_cover=90");
@@ -77,18 +78,18 @@ public class GeoTiffResource {
     @Path("/sentinel")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_OCTET_STREAM)
-    public Response getGeoTiffSentinel(ExtentRequest extentRequest) {
-        String boundingBox = getBoundingBoxString(extentRequest);
-        LOG.info("Request for GeoTiffs with extent " + boundingBox);
+    public Response getGeoTiffSentinel(SentinelRequest sentinelRequest) {
+        String boundingBox = getBoundingBoxString(sentinelRequest.getExtent());
+        LOG.info("Request for GeoTiffs " + sentinelRequest);
 
-        InputStream inputStream = sentinelProcessApiClient.getGeoTiff(extentRequest.getExtent());
+        InputStream inputStream = sentinelProcessApiClient.getGeoTiff(sentinelRequest.getExtent(), sentinelRequest.getDateFrom() + "T00:00:00Z", sentinelRequest.getDateTo() + "T00:00:00Z", sentinelRequest.getCloudCoverage());
 
         return Response.ok(inputStream).header("Content-Type", "image/tiff").build();
 
     }
 
-    private static String getBoundingBoxString(ExtentRequest extentRequest) {
-        String array = Arrays.toString(extentRequest.getExtent());
+    private static String getBoundingBoxString(double[] extent) {
+        String array = Arrays.toString(extent);
         return array.substring(1, array.length() - 2).replaceAll("\\s+", "");
     }
 }

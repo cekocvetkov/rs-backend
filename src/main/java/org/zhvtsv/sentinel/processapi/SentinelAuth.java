@@ -56,7 +56,6 @@ public class SentinelAuth {
         }
 
         JSONObject json = new JSONObject(response.body());
-        System.out.println(response.body());
         String accessToken = json.getString("access_token");
 
         return accessToken;

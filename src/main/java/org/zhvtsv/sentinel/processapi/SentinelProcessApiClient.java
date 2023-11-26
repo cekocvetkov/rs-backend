@@ -19,25 +19,19 @@ import java.util.Arrays;
 public class SentinelProcessApiClient {
     @Inject
     SentinelAuth sentinelAuth;
-
-    public InputStream getGeoTiff(double[] boundingBox) {
-        return getGeoTiff(boundingBox, "2023-10-26T00:00:00Z", "2023-11-26T23:59:59Z", 30);
-    }
+    
 
     public InputStream getGeoTiff(double[] boundingBox, String dateFrom, String dateTo, int cloudCoveragePercent) {
         HttpClient httpClient = HttpClient.newBuilder().build();
 
         JSONObject payload = getRequestPayload(boundingBox, dateFrom, dateTo, cloudCoveragePercent);
 
-        System.out.println(payload.toString());
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create("https://sh.dataspace.copernicus.eu/api/v1/process"))
                 .headers("Authorization", "Bearer " + sentinelAuth.getAccessToken(), "Content-Type", "application/json", "Accept", "image/tiff")
                 .POST(HttpRequest.BodyPublishers.ofString(payload.toString()))
 //                .POST(HttpRequest.BodyPublishers.ofString(JsonRequestPayloadSampleData.JSON_BODY_SENTINEL_HUB))
                 .build();
-
-        String outputPath = "satelliteData.TIF";
 
         HttpResponse<InputStream> response = null;
         try {
